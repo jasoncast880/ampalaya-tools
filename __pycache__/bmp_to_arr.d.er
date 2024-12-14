@@ -1,0 +1,5 @@
+##[pylyzer] failed /home/plebish/ampalaya-tools/bmp_to_arr.py 1734139532 187
+
+.Image: Never
+
+.path: {"./file.py"}
