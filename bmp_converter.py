@@ -1,16 +1,15 @@
 from PIL import Image
 import sys
 
-#my pixel to arr elements formatter
-def to_rgb565(r,g,b):
-    rgb565 = (((r&0xf8) << 8)  | ((g&0xfc)<<3) | (b>>3))
-    #RRRRRGGG GGGBBBBB
-    #seperate the bytes
-    lo_byte = (rgb565)&0xFF
-    hi_byte = (rgb565>>8)&0xFF
+# My pixel to arr elements formatter
+def to_rgb565(r, g, b):
+    rgb565 = (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3))
+    # RRRRRGGG GGGBBBBB
+    # Separate the bytes
+    lo_byte = (rgb565) & 0xFF
+    hi_byte = (rgb565 >> 8) & 0xFF
 
     return hi_byte, lo_byte
-    
 
 def bmp_to_c_array(filepath, array_name="image_data"):
     try:
@@ -19,30 +18,38 @@ def bmp_to_c_array(filepath, array_name="image_data"):
         if img.mode != "RGB":
             img = img.convert("RGB")
 
-        #get pixel data, image dims
+        # Get pixel data, image dimensions
         width, height = img.size
         pixels = list(img.getdata())
 
-        #convert the pixels to little endian
-        rgb565_bytes = []
-        for r,g,b in pixels:
-            hi,lo = to_rgb565(r,g,b)
-            rgb565_bytes.append(lo) #little endian ordering critical
-            rgb565_bytes.append(hi)
+        # Flip the image vertically
+        flipped_pixels = []
+        for y in range(height - 1, -1, -1):  # Iterate rows from bottom to top
+            row_start = y * width
+            row_end = row_start + width
+            flipped_pixels.extend(pixels[row_start:row_end])
 
-        #format to c style array
+        rgb565_bytes = []
+        for r, g, b in flipped_pixels:  # Process flipped_pixels
+            hi, lo = to_rgb565(r, g, b)
+            rgb565_bytes.append(hi)
+            rgb565_bytes.append(lo)  
+
+        # Format to C-style array
         c_style_array = f"static const uint8_t {array_name}[] = {{\n"
-        for i in range(0,len(rgb565_bytes),16):
-            line = ", ".join(f"0x{byte:02X}"
-            for byte in rgb565_bytes[i:i+16])
-            c_style_array+=f"   {line},\n"
+        for i in range(0, len(rgb565_bytes), 16):
+            line = ", ".join(f"0x{byte:02X}" for byte in rgb565_bytes[i:i+16])
+            c_style_array += f"   {line},\n"
+        c_style_array += "};\n"  # Close the array properly
+
+        return c_style_array
 
     except Exception as e:
         print(f"Error: {e}")
         return None
 
-def main():                                                        
-    if len(sys.argv) <3:
+def main():
+    if len(sys.argv) < 3:
         print("Usage: python3 bmp_converter.py <bmp_filepath> <array_name>")
         return
     filepath = sys.argv[1]
@@ -54,11 +61,10 @@ def main():
         header_file = f"{array_name}.h"
         with open(header_file, "w") as f:
             f.write(c_style_array)
-        print(f"generated c header file saved to {header_file}")
+        print(f"Generated C header file saved to {header_file}")
     else:
         print("Failure")
 
 if __name__ == "__main__":
     main()
-
 
