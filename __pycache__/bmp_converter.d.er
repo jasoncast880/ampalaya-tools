@@ -1,0 +1,10 @@
+##[pylyzer] failed /home/plebish/ampalaya-tools/bmp_converter.py 1734398295 1751
+.Image: Never
+
+.sys = pyimport "<failure>"
+.<failure> = pyimport "<failure>"
+
+.to_rgb565: |R :> {252}, O <: Structural({.__or__ = (self: Never, R) -> O}), O <: Structural({.__lshift__ = (self: Never, R) -> O}), O <: Structural({.__or__ = (self: Never, R) -> O}), R :> {255}, R :> {248}, Type_3 <: Structural({.__and__ = (self: Never, R) -> O}), R :> {3}, R :> {8}, R :> {8}, O: Type, O <: Structural({.__rshift__ = (self: Never, R) -> O; .__and__ = (self: Never, R) -> O}), O <: Structural({.__lshift__ = (self: Never, R) -> R}), R :> {3}, R: Type, O <: Structural({.__and__ = (self: Never, R) -> O}), R :> {255}|(r: Type_3, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.bmp_to_c_array: (filepath: Obj, array_name: Obj := Obj) -> Never
+.main: () -> NoneType
+
