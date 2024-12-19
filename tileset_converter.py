@@ -12,58 +12,61 @@ def to_rgb565(r,g,b):
     return hi_byte, lo_byte
 
 def bmp_tileset_to_c_array(filepath,array_name,tile_len):
-    filepath = "example.png"  # Replace with your file path
-    img = Image.open(filepath)
+    try:
+        img = Image.open(filepath)
 
-    if img.mode != "RGB":
-        img = img.convert("RGB")
+        if img.mode != "RGB":
+            img = img.convert("RGB")
 
-    width, height = img.size
-    pixels = list(img.getdata())  # Flattened list of (r, g, b)
+        width, height = img.size
+        pixels = list(img.getdata())  # Flattened list of (r, g, b)
 
-    # Convert to RGB565 format
-    rgb565_bytes = []
-    for r, g, b in pixels:
-        hi, lo = to_rgb565(r, g, b)
-        rgb565_bytes.append(hi)
-        rgb565_bytes.append(lo)
+        # Convert to RGB565 format
+        rgb565_bytes = []
+        for r, g, b in pixels:
+            hi, lo = to_rgb565(r, g, b)
+            rgb565_bytes.append(hi)
+            rgb565_bytes.append(lo)
 
-    # Image tile properties
-    tile_len = 8  # Example tile length
-    tiles_wide = width // tile_len
-    tiles_tall = height // tile_len
+        # Image tile properties
+        tile_len = 8  # Example tile length
+        tiles_wide = width // tile_len
+        tiles_tall = height // tile_len
 
-    # Reorganize bytes into tiled format
-    rgb565_bytes_reordered = []
-    for tile_row in range(tiles_tall):
-        temp_byte_arr = [[] for _ in range(tiles_wide)]  # Buffers for each tile in a row
+        # Reorganize bytes into tiled format
+        rgb565_bytes_reordered = []
+        for tile_row in range(tiles_tall):
+            temp_byte_arr = [[] for _ in range(tiles_wide)]  # Buffers for each tile in a row
 
-        for row_in_tile in range(tile_len):  # Process pixel rows within a tile
-            start = (tile_row * width * tile_len) + (row_in_tile * width)
-            for tile_col in range(tiles_wide):
-                tile_start = start + (tile_col * tile_len * 2)
-                tile_pixels = rgb565_bytes[tile_start:tile_start + tile_len * 2]
-                temp_byte_arr[tile_col].extend(tile_pixels)
+            for row_in_tile in range(tile_len):  # Process pixel rows within a tile
+                start = (tile_row * width * tile_len) + (row_in_tile * width)
+                for tile_col in range(tiles_wide):
+                    tile_start = start + (tile_col * tile_len * 2)
+                    tile_pixels = rgb565_bytes[tile_start:tile_start + tile_len * 2]
+                    temp_byte_arr[tile_col].extend(tile_pixels)
 
-        for tile in temp_byte_arr:
-            rgb565_bytes_reordered.extend(tile)
+            for tile in temp_byte_arr:
+                rgb565_bytes_reordered.extend(tile)
 
-    # Format the reordered data into a C array
-    c_array = "const uint8_t image_data[] = {\n"
-    for i, byte in enumerate(rgb565_bytes_reordered):
-        c_array += f"0x{byte:02X}, "
-        if (i + 1) % 16 == 0:  # Add a newline every 16 bytes for readability
-            c_array += "\n"
-    c_array = c_array.rstrip(", \n") + "\n};"  # Remove trailing comma and add closing brace
+        # Format the reordered data into a C array
+        c_array = "const uint8_t image_data[] = {\n"
+        for i, byte in enumerate(rgb565_bytes_reordered):
+            c_array += f"0x{byte:02X}, "
+            if (i + 1) % 16 == 0:  # Add a newline every 16 bytes for readability
+                c_array += "\n"
+        c_array = c_array.rstrip(", \n") + "\n};"  # Remove trailing comma and add closing brace
 
-    # Output the C array
-    return(c_array)
+        # Output the C array
+        return(c_array)
 
-except Exception as e:
-    print(f"Error: {e}")
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
 
 def main():
-    if len(sys.argv) < 6:
+    if len(sys.argv) < 4:
         print("Usage: python3 tileset_converter.py <bmp_filepath> <array_name> <tile_len>")
         return
     filepath = sys.argv[1]
