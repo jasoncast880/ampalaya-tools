@@ -1,5 +1,4 @@
-import numpy as np
-from PIL import Imag
+from PIL import Image
 import sys
 #purpose is to convert a tileset into a c style buffer array.
 #i want to build this to hold pointers to all the datas.
@@ -12,73 +11,68 @@ def to_rgb565(r,g,b):
 
     return hi_byte, lo_byte
 
-# this is distinct from the bmp_converter script because it will take each
-# square and make it into its own buffer string;
-# metadata to seperate the textures appropriately.
-def bmp_tileset_to_c_array(filepath, array_name,tile_len, tiles_wide, tiles_tall): 
-    try:
-        img = Image.open(filepath)
+def bmp_tileset_to_c_array(filepath,array_name,tile_len):
+    filepath = "example.png"  # Replace with your file path
+    img = Image.open(filepath)
 
-        if img.mode != "RGB":
-            img = img.convert("RGB")
+    if img.mode != "RGB":
+        img = img.convert("RGB")
 
-        width, height = img.size
-        pixels = list(img.getdata())
+    width, height = img.size
+    pixels = list(img.getdata())  # Flattened list of (r, g, b)
 
-        #process the flipped pixels byte by byte 
-        #big endian???
-        rgb565_bytes = []
-        for r,g,b in pixels:
-            hi, lo = to_rgb565(r,g,b)
-            rgb565_bytes.append(hi)
-            rgb565_bytes.append(lo)
-        
+    # Convert to RGB565 format
+    rgb565_bytes = []
+    for r, g, b in pixels:
+        hi, lo = to_rgb565(r, g, b)
+        rgb565_bytes.append(hi)
+        rgb565_bytes.append(lo)
 
-        #rgb565bytes reps the buf arr. (2by / pix)    
-        for rows in tiles_tall:
+    # Image tile properties
+    tile_len = 8  # Example tile length
+    tiles_wide = width // tile_len
+    tiles_tall = height // tile_len
 
-        temp_byte_arr = [[0 for _ in range(tile_len^2)] for _ in range(tiles_wide)] #temp byte arr for each row of tiles cluster.
-        #process the rows of pixels individually. put the tiles into temp buffers to concat afterwards
-            for row_of_pixels in tile_len: 
-                #reps the row of pixels. every <tile_len> pixels store in the next buffer.
-                for tiles in tiles_wide:
-                    for pix in tile_len:
+    # Reorganize bytes into tiled format
+    rgb565_bytes_reordered = []
+    for tile_row in range(tiles_tall):
+        temp_byte_arr = [[] for _ in range(tiles_wide)]  # Buffers for each tile in a row
 
+        for row_in_tile in range(tile_len):  # Process pixel rows within a tile
+            start = (tile_row * width * tile_len) + (row_in_tile * width)
+            for tile_col in range(tiles_wide):
+                tile_start = start + (tile_col * tile_len * 2)
+                tile_pixels = rgb565_bytes[tile_start:tile_start + tile_len * 2]
+                temp_byte_arr[tile_col].extend(tile_pixels)
 
-                    
-                     
-#concat the array to include the tiles we processed in the last row
+        for tile in temp_byte_arr:
+            rgb565_bytes_reordered.extend(tile)
 
-"""
-        #flip image vertically; THIS IS HARDWARE-DEPENDENT i think
-        flipped_pixels = []
-        for y in range(height -1, -1, -1): #iterate rows from bot to top
-            row_start = y*width
-            row_end = row_start+width
-            flipped_pixels.extend(pixels[row_start:row_end])
-"""
+    # Format the reordered data into a C array
+    c_array = "const uint8_t image_data[] = {\n"
+    for i, byte in enumerate(rgb565_bytes_reordered):
+        c_array += f"0x{byte:02X}, "
+        if (i + 1) % 16 == 0:  # Add a newline every 16 bytes for readability
+            c_array += "\n"
+    c_array = c_array.rstrip(", \n") + "\n};"  # Remove trailing comma and add closing brace
 
-        c_style_arr = ['']
-        return c_style_arr
+    # Output the C array
+    return(c_array)
 
-    except Exception as e:
-        print(f"Error:{e}")
-        return None
-
+except Exception as e:
+    print(f"Error: {e}")
 
 def main():
     if len(sys.argv) < 6:
-        print("Usage: python3 tileset_converter.py <bmp_filepath> <array_name> <tile_len> <tiles_wide> <tiles_tall>")
+        print("Usage: python3 tileset_converter.py <bmp_filepath> <array_name> <tile_len>")
         return
     filepath = sys.argv[1]
     array_name = sys.argv[2]
     tile_len   = sys.argv[3]
-    tiles_wide = sys.argv[4]
-    tiles_tall = sys.argv[5]
 
     #generate a header, also write commented metadata at the top; pointers to all the datas
     #array will be a buffer, each x bytes is one tile
-    c_style_array = bmp_tileset_to_c_array(filepath, array_name, tile_len, tiles_wide, tiles_tall)
+    c_style_array = bmp_tileset_to_c_array(filepath, array_name, tile_len)
 
     if c_style_array:
         header_file = f"{array_name}.h"
