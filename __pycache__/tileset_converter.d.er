@@ -1,0 +1,14 @@
+##[pylyzer] failed /home/plebish/ampalaya-tools/tileset_converter.py 1735053798 2539
+.Image: Never
+
+.sys = pyimport "<failure>"
+.<failure> = pyimport "<failure>"
+
+.to_rgb565: |O <: Structural({.__lshift__ = (self: Never, ?R) -> ?O}), R :> {3}, R :> {252}, R: Type, O: Type, Type_10360 <: Structural({.__and__ = (self: Never, ?R) -> ?O})|(r: Type_10360, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.tileset_to_array: (filepath: Obj, array_name: Obj, tile_len: Nat) -> Never
+.main: () -> NoneType
+
+ R :> {255}, O <: Structural({.__or__ = (self: Never, R) -> O}), O <: Structural({.__lshift__ = (self: Never, R) -> O}), R: Type, R :> {8}|(r: Type_6575, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.tileset_to_array: Never
+.main: () -> NoneType
+

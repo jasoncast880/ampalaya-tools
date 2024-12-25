@@ -1,7 +1,5 @@
 from PIL import Image
 import sys
-#purpose is to convert a tileset into a c style buffer array.
-#i want to build this to hold pointers to all the datas.
 
 def to_rgb565(r,g,b):
     rgb565 = (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3))
@@ -11,59 +9,56 @@ def to_rgb565(r,g,b):
 
     return hi_byte, lo_byte
 
-def bmp_tileset_to_c_array(filepath,array_name,tile_len):
+def tileset_to_array(filepath,array_name,tile_len):
     try:
         img = Image.open(filepath)
-
         if img.mode != "RGB":
             img = img.convert("RGB")
 
-        width, height = img.size
-        pixels = list(img.getdata())  # Flattened list of (r, g, b)
+        bmp_width, bmp_height = img.size
+        pixels = list(img.getdata())
 
-        # Convert to RGB565 format
+        #flip the img??
+        flipped_pixels = []
+        for y in range(bmp_height -1, -1, -1):
+            row_start = y*bmp_width
+            row_end = row_start+bmp_width
+            flipped_pixels.extend(pixels[row_start:row_end])
+        
         rgb565_bytes = []
-        for r, g, b in pixels:
+        for r, g, b in flipped_pixels:
             hi, lo = to_rgb565(r, g, b)
             rgb565_bytes.append(hi)
             rgb565_bytes.append(lo)
 
-        # Image tile properties
-        tile_len = 8  # Example tile length
-        tiles_wide = width // tile_len
-        tiles_tall = height // tile_len
+        #tile converting section starts here
+        #for this section i'm going to reorder 565
 
-        # Reorganize bytes into tiled format
-        rgb565_bytes_reordered = []
-        for tile_row in range(tiles_tall):
-            temp_byte_arr = [[] for _ in range(tiles_wide)]  # Buffers for each tile in a row
+        tile_ready_bytes = [] #append, copy on the thing
 
-            for row_in_tile in range(tile_len):  # Process pixel rows within a tile
-                start = (tile_row * width * tile_len) + (row_in_tile * width)
-                for tile_col in range(tiles_wide):
-                    tile_start = start + (tile_col * tile_len * 2)
-                    tile_pixels = rgb565_bytes[tile_start:tile_start + tile_len * 2]
-                    temp_byte_arr[tile_col].extend(tile_pixels)
+        tilerow_buf_size = 16*tile_len # 16-bits/pix * tile's length. 
+        tiles_wide = bmp_width//tile_len
+        tiles_tall = bmp_height//tile_len
+        num_tiles = tiles_wide*tiles_tall
 
-            for tile in temp_byte_arr:
-                rgb565_bytes_reordered.extend(tile)
+        bufPtr = 0
+        for i in range(num_tiles):
+            for j in range(tile_len):
+                tile_ready_bytes.append(rgb565_bytes[bufPtr:bufPtr+tilerow_buf_size])
+                bufPtr+=bmp_width
+            bufPtr=Nat(i*tile_len) #after tile, offset to the next pix
 
-        # Format the reordered data into a C array
-        c_array = "const uint8_t image_data[] = {\n"
-        for i, byte in enumerate(rgb565_bytes_reordered):
-            c_array += f"0x{byte:02X}, "
-            if (i + 1) % 16 == 0:  # Add a newline every 16 bytes for readability
-                c_array += "\n"
-        c_array = c_array.rstrip(", \n") + "\n};"  # Remove trailing comma and add closing brace
+        c_style_array = f"static const uint8_t {array_name}[] = {{\n"
+        for i in range(0, len(tile_ready_bytes), 16):
+            line = ", ".join(f"0x{byte:02X}" for byte in tile_ready_bytes[i:i+16])
+            c_style_array += f"   {line},\n"
+        c_style_array += "};\n" #close array
 
-        # Output the C array
-        return(c_array)
+        return c_style_array
 
     except Exception as e:
         print(f"Error: {e}")
         return None
-
-
 
 def main():
     if len(sys.argv) < 4:
@@ -75,7 +70,7 @@ def main():
 
     #generate a header, also write commented metadata at the top; pointers to all the datas
     #array will be a buffer, each x bytes is one tile
-    c_style_array = bmp_tileset_to_c_array(filepath, array_name, tile_len)
+    c_style_array = tileset_to_array(filepath, array_name, tile_len)
 
     if c_style_array:
         header_file = f"{array_name}.h"
