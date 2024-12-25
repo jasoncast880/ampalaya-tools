@@ -1,7 +1,8 @@
 from PIL import Image
 import sys
 
-def to_rgb565(r,g,b):
+def to_rgb565(r, g, b):
+    # Convert RGB to RGB565 (16-bit color)
     rgb565 = (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3))
     
     lo_byte = (rgb565) & 0xFF
@@ -9,8 +10,12 @@ def to_rgb565(r,g,b):
 
     return hi_byte, lo_byte
 
-def tileset_to_array(filepath,array_name,tile_len):
+def tileset_to_array(filepath, array_name, tile_len):
     try:
+        # Ensure tile_len is an integer
+        tile_len = int(tile_len)
+
+        # Open the image and ensure it's in RGB format
         img = Image.open(filepath)
         if img.mode != "RGB":
             img = img.convert("RGB")
@@ -18,41 +23,45 @@ def tileset_to_array(filepath,array_name,tile_len):
         bmp_width, bmp_height = img.size
         pixels = list(img.getdata())
 
-        #flip the img??
+        # Flip the image vertically
         flipped_pixels = []
-        for y in range(bmp_height -1, -1, -1):
-            row_start = y*bmp_width
-            row_end = row_start+bmp_width
+        for y in range(bmp_height - 1, -1, -1):
+            row_start = y * bmp_width
+            row_end = row_start + bmp_width
             flipped_pixels.extend(pixels[row_start:row_end])
         
+        # Convert pixels to RGB565 format (hi and lo byte)
         rgb565_bytes = []
         for r, g, b in flipped_pixels:
             hi, lo = to_rgb565(r, g, b)
             rgb565_bytes.append(hi)
             rgb565_bytes.append(lo)
 
-        #tile converting section starts here
-        #for this section i'm going to reorder 565
+        # Tile processing: rearrange the data into tiles
+        tile_ready_bytes = []  # Final tile data
 
-        tile_ready_bytes = [] #append, copy on the thing
-
-        tilerow_buf_size = 16*tile_len # 16-bits/pix * tile's length. 
-        tiles_wide = bmp_width//tile_len
-        tiles_tall = bmp_height//tile_len
-        num_tiles = tiles_wide*tiles_tall
+        tilerow_buf_size = 2 * tile_len  # Each tile row has `tile_len` pixels, each pixel is 2 bytes (16 bits)
+        tiles_wide = bmp_width // tile_len
+        tiles_tall = bmp_height // tile_len
+        num_tiles = tiles_wide * tiles_tall
 
         bufPtr = 0
-        for i in range(num_tiles):
-            for j in range(tile_len):
-                tile_ready_bytes.append(rgb565_bytes[bufPtr:bufPtr+tilerow_buf_size])
-                bufPtr+=bmp_width
-            bufPtr=Nat(i*tile_len) #after tile, offset to the next pix
+        for i in range(tiles_tall):  # Loop over tile rows
+            for j in range(tiles_wide):  # Loop over tile columns
+                for k in range(tile_len):  # Loop over each row within a tile
+                    # Calculate the start and end positions for this row of the current tile
+                    start = bufPtr + (j * tile_len * 2) + (k * bmp_width * 2)
+                    end = start + (tile_len * 2)
+                    tile_ready_bytes.extend(rgb565_bytes[start:end])
+                
+            bufPtr += tile_len * bmp_width * 2  # Move to the next tile row
 
+        # Convert the tile data into a C-style array format
         c_style_array = f"static const uint8_t {array_name}[] = {{\n"
         for i in range(0, len(tile_ready_bytes), 16):
             line = ", ".join(f"0x{byte:02X}" for byte in tile_ready_bytes[i:i+16])
             c_style_array += f"   {line},\n"
-        c_style_array += "};\n" #close array
+        c_style_array += "};\n"  # Close the array
 
         return c_style_array
 
@@ -61,15 +70,15 @@ def tileset_to_array(filepath,array_name,tile_len):
         return None
 
 def main():
+    # Check arguments
     if len(sys.argv) < 4:
         print("Usage: python3 tileset_converter.py <bmp_filepath> <array_name> <tile_len>")
         return
     filepath = sys.argv[1]
     array_name = sys.argv[2]
-    tile_len   = sys.argv[3]
+    tile_len = sys.argv[3]
 
-    #generate a header, also write commented metadata at the top; pointers to all the datas
-    #array will be a buffer, each x bytes is one tile
+    # Generate the C-style array and write it to a header file
     c_style_array = tileset_to_array(filepath, array_name, tile_len)
 
     if c_style_array:
