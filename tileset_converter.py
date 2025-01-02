@@ -40,21 +40,24 @@ def tileset_to_array(filepath, array_name, tile_len):
         # Tile processing: rearrange the data into tiles
         tile_ready_bytes = []  # Final tile data
 
-        tilerow_buf_size = 2 * tile_len  # Each tile row has `tile_len` pixels, each pixel is 2 bytes (16 bits)
         tiles_wide = bmp_width // tile_len
         tiles_tall = bmp_height // tile_len
         num_tiles = tiles_wide * tiles_tall
 
-        bufPtr = 0
-        for i in range(tiles_tall):  # Loop over tile rows
-            for j in range(tiles_wide):  # Loop over tile columns
-                for k in range(tile_len):  # Loop over each row within a tile
-                    # Calculate the start and end positions for this row of the current tile
-                    start = bufPtr + (j * tile_len * 2) + (k * bmp_width * 2)
+        print(f"tiles wide: {tiles_wide}\n")
+        print(f"tiles tall: {tiles_tall}\n")
+        print(f"num tiles: {num_tiles}\n")
+
+        bufPtr = 0              
+        for i in range(tiles_tall): #for each given tile row
+            bufPtr=i*tile_len*bmp_width*2 #reset the bufPtr to the bot left pix of the tile-row
+            for j in range(tiles_wide): #within a given tile row
+                for k in range(tile_len):  # Loop over each row within a single given tile
+                    start = bufPtr + (j*tile_len*2);
                     end = start + (tile_len * 2)
                     tile_ready_bytes.extend(rgb565_bytes[start:end])
-                
-            bufPtr += tile_len * bmp_width * 2  # Move to the next tile row
+                    bufPtr += bmp_width * 2  # Move to the next tile row???
+                bufPtr=i*tile_len*bmp_width*2 #reset the bufPtr to the bot left pix of the tile-row
 
         # Convert the tile data into a C-style array format
         c_style_array = f"static const uint8_t {array_name}[] = {{\n"
