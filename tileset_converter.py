@@ -85,10 +85,10 @@ def main():
     c_style_array = tileset_to_array(filepath, array_name, tile_len)
 
     if c_style_array:
-        header_file = f"{array_name}.h"
+        header_file = f"{array_name}.cpp"
         with open(header_file, "w") as f:
             f.write(c_style_array)
-        print(f"Generated C header file saved to {header_file}")
+        print(f"Generated .cpp file saved to {header_file}")
     else:
         print("Failure to create file")
 

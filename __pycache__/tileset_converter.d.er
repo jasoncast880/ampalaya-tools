@@ -1,14 +1,14 @@
-##[pylyzer] failed /home/plebish/ampalaya-tools/tileset_converter.py 1735834241 3286
+##[pylyzer] failed /home/plebish/ampalaya-tools/tileset_converter.py 1736451882 3354
 .Image: Never
 
 .sys = pyimport "<failure>"
 .<failure> = pyimport "<failure>"
 
-.to_rgb565: |O <: Structural({.__lshift__ = (self: Never, ?R) -> ?O}), R :> {3}, Type_4879 <: Structural({.__and__ = (self: Never, ?R) -> ?O}), R: Type, O: Type, R :> {252}|(r: Type_4879, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.to_rgb565: |R :> {252}, O <: Structural({.__lshift__ = (self: Never, ?R) -> ?O}), R :> {3}, R: Type, Type_1195 <: Structural({.__and__ = (self: Never, ?R) -> ?O}), O: Type|(r: Type_1195, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
 .tileset_to_array: (filepath: Obj, array_name: Obj, tile_len: Int) -> Never
 .main: () -> NoneType
 
-self: Never, R) -> O}), R :> {8}, O: Type, O <: Structural({.__lshift__ = (self: Never, R) -> O}), R :> {8}, R :> {252}, R: Type, R :> {255}|(r: Type_1105, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
-.tileset_to_array: Never
+uctural({.__or__ = (self: Never, R) -> O}), O <: Structural({.__lshift__ = (self: Never, R) -> O}), O: Type, R :> {252}, R: Type|(r: Type_1195, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.tileset_to_array: (filepath: Obj, array_name: Obj, tile_len: Int) -> Never
 .main: () -> NoneType
 

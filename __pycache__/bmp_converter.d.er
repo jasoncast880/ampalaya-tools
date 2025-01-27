@@ -1,14 +1,14 @@
-##[pylyzer] failed /home/plebish/ampalaya-tools/bmp_converter.py 1734412646 2040
+##[pylyzer] failed /home/plebish/ampalaya-tools/bmp_converter.py 1736451462 2042
 .Image: Never
 
 .sys = pyimport "<failure>"
 .<failure> = pyimport "<failure>"
 
-.to_rgb565: |O <: Structural({.__lshift__ = (self: Never, ?R) -> ?O}), R :> {3}, Type_3 <: Structural({.__and__ = (self: Never, ?R) -> ?O}), R: Type, O: Type, R :> {252}|(r: Type_3, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.to_rgb565: |R :> {3}, Type_174 <: Structural({.__and__ = (self: Never, ?R) -> ?O}), R :> {252}, R: Type, O: Type, O <: Structural({.__lshift__ = (self: Never, ?R) -> ?O})|(r: Type_174, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
 .bmp_to_c_array: (filepath: Obj, array_name: Obj := Obj) -> Never
 .main: () -> NoneType
 
-), O <: Structural({.__lshift__ = (self: Never, R) -> R}), R :> {3}, R: Type, O <: Structural({.__and__ = (self: Never, R) -> O}), R :> {255}|(r: Type_3, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+, R) -> O}), O <: Structural({.__lshift__ = (self: Never, R) -> O}), O <: Structural({.__and__ = (self: Never, R) -> O}), R: Type, R :> {3}|(r: Type_174, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
 .bmp_to_c_array: (filepath: Obj, array_name: Obj := Obj) -> Never
 .main: () -> NoneType
 
