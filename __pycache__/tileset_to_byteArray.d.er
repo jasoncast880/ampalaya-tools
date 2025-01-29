@@ -1,0 +1,11 @@
+##[pylyzer] failed /home/plebish/ampalaya-tools/tileset_to_byteArray.py 1738086869 3394
+.Image: Never
+
+.sys = pyimport "<failure>"
+.<failure> = pyimport "<failure>"
+
+
+.to_rgb565: |O <: Structural({.__or__ = (self: Never, R) -> O}), R :> {8}, R :> {248}, R :> {255}, O <: Structural({.__rshift__ = (self: Never, R) -> O; .__and__ = (self: Never, R) -> O}), Type_4341 <: Structural({.__and__ = (self: Never, R) -> O}), O: Type, R :> {3}, R :> {3}, R :> {255}, R :> {8}, R :> {252}, O <: Structural({.__lshift__ = (self: Never, R) -> R}), O <: Structural({.__or__ = (self: Never, R) -> O}), R: Type, O <: Structural({.__lshift__ = (self: Never, R) -> O}), O <: Structural({.__and__ = (self: Never, R) -> O})|(r: Type_4341, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.tileset_to_array: (filepath: Obj, array_name: Obj, tile_len: Int) -> Never
+.main: () -> NoneType
+

@@ -1,0 +1,16 @@
+##[pylyzer] failed /home/plebish/ampalaya-tools/bmp_to_TilesetArr.py 1738092443 3565
+.Image: Never
+
+.sys = pyimport "<failure>"
+.<failure> = pyimport "<failure>"
+
+.to_rgb565: |O <: Structural({.__lshift__ = (self: Never, ?R) -> ?O}), R :> {3}, Type_11058 <: Structural({.__and__ = (self: Never, ?R) -> ?O}), R: Type, O: Type, R :> {252}|(r: Type_11058, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.tileset_to_array: (filepath: Obj, array_name: Obj, tile_len: Int) -> Never
+.main: () -> NoneType
+
+
+ural({.__rshift__ = (self: Never, R) -> O; .__and__ = (self: Never, R) -> O}), R: Type, O <: Structural({.__or__ = (self: Never, R) -> O})|(r: Type_10854, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> Tuple([O, O])
+.tileset_to_array: Never
+.main: () -> NoneType
+
+
