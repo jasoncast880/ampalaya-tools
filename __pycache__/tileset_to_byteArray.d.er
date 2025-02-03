@@ -4,7 +4,7 @@
 .sys: Never
 
 
-.to_rgb565: |O <: Structural({.__lshift__ = (self: Never, R) -> O}), O <: Structural({.__and__ = (self: Never, R) -> O}), R :> {3}, O <: Structural({.__or__ = (self: Never, R) -> O}), R :> {8}, O <: Structural({.__or__ = (self: Never, R) -> O}), R :> {252}, O: Type, R :> {248}, O <: Structural({.__lshift__ = (self: Never, R) -> R}), Type_374 <: Structural({.__and__ = (self: Never, R) -> O}), O <: Structural({.__rshift__ = (self: Never, R) -> O; .__and__ = (self: Never, R) -> O}), R :> {255}, R: Type|(r: Type_374, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> global::Tuple([O, O])
+.to_rgb565: |O <: Structural({.__or__ = (self: Never, R) -> O}), O <: Structural({.__rshift__ = (self: Never, R) -> O; .__and__ = (self: Never, R) -> O}), R :> {3}, R :> {8}, O <: Structural({.__lshift__ = (self: Never, R) -> O}), O <: Structural({.__and__ = (self: Never, R) -> O}), R :> {252}, O: Type, R :> {248}, Type_374 <: Structural({.__and__ = (self: Never, R) -> O}), O <: Structural({.__or__ = (self: Never, R) -> O}), O <: Structural({.__lshift__ = (self: Never, R) -> R}), R :> {255}, R: Type|(r: Type_374, g: Structural({.__and__ = (self: Never, R) -> O}), b: Structural({.__rshift__ = (self: Never, R) -> R})) -> global::Tuple([O, O])
 .tileset_to_array: (filepath: Obj, array_name: Obj, tile_len: Int) -> Never
 .main: () -> NoneType
 

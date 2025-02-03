@@ -32,6 +32,8 @@ def to_indexed_value(r, g, b):
         value = 4
     elif((r==0)&(g==8)&(b==113)): #DARK BLU
         value = 5
+    elif((r==255)&(g==0)&(b==113)): #PURP pure ALPHA (filter this out)
+        value = 255
 
     return value
 
